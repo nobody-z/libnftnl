@@ -527,6 +527,33 @@ LIBNFTNL_4.1 {
 	nftnl_udata_get;
 	nftnl_udata_next;
 	nftnl_udata_parse;
+
+	nftnl_nexpr_alloc;
+	nftnl_nexpr_free;
+	nftnl_nexpr_is_set;
+	nftnl_nexpr_unset;
+	nftnl_nexpr_set;
+	nftnl_nexpr_get;
+	nftnl_nexpr_set_u32;
+	nftnl_nexpr_set_str;
+	nftnl_nexpr_get_u32;
+	nftnl_nexpr_get_str;
+	nftnl_nexpr_parse;
+	nftnl_nexpr_parse_file;
+	nftnl_nexpr_snprintf;
+	nftnl_nexpr_fprintf;
+	nftnl_nexpr_nlmsg_build_payload;
+	nftnl_nexpr_nlmsg_parse;
+	nftnl_nexpr_list_alloc;
+	nftnl_nexpr_list_free;
+	nftnl_nexpr_list_is_empty;
+	nftnl_nexpr_list_foreach;
+	nftnl_nexpr_list_add;
+	nftnl_nexpr_list_add_tail;
+	nftnl_nexpr_list_del;
+	nftnl_nexpr_list_iter_create;
+	nftnl_nexpr_list_iter_next;
+	nftnl_nexpr_list_iter_destroy;
 } LIBNFTNL_4;
 
 LIBNFTNL_4.2 {

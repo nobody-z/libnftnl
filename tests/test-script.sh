@@ -26,5 +26,6 @@
 ./nft-rule-test
 ./nft-set-test
 ./nft-table-test
+./nft-nexpr-test
 ./nft-parsing-test -d xmlfiles
 ./nft-parsing-test -d jsonfiles

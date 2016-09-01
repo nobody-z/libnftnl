@@ -7,6 +7,7 @@ EXTRA_DIST =		test-script.sh			\
 check_PROGRAMS = 	nft-parsing-test		\
 			nft-table-test			\
 			nft-chain-test			\
+			nft-nexpr-test			\
 			nft-rule-test			\
 			nft-set-test			\
 			nft-expr_bitwise-test		\
@@ -42,6 +43,9 @@ nft_table_test_LDADD = ../src/libnftnl.la ${LIBMNL_LIBS}
 
 nft_chain_test_SOURCES = nft-chain-test.c
 nft_chain_test_LDADD = ../src/libnftnl.la ${LIBMNL_LIBS}
+
+nft_nexpr_test_SOURCES = nft-nexpr-test.c
+nft_nexpr_test_LDADD = ../src/libnftnl.la ${LIBMNL_LIBS}
 
 nft_rule_test_SOURCES = nft-rule-test.c
 nft_rule_test_LDADD = ../src/libnftnl.la ${LIBMNL_LIBS}

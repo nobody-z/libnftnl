@@ -13,6 +13,7 @@ libnftnl_la_SOURCES = utils.c		\
 		      table.c		\
 		      trace.c		\
 		      chain.c		\
+		      nexpr.c		\
 		      rule.c		\
 		      set.c		\
 		      set_elem.c	\
