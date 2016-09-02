@@ -4,6 +4,7 @@
 #define NFT_TABLE_MAXNAMELEN	32
 #define NFT_CHAIN_MAXNAMELEN	32
 #define NFT_SET_MAXNAMELEN	32
+#define NFT_NEXPR_MAXNAMELEN	32
 #define NFT_USERDATA_MAXLEN	256
 
 /**
@@ -85,6 +86,10 @@ enum nft_verdicts {
  * @NFT_MSG_NEWGEN: announce a new generation, only for events (enum nft_gen_attributes)
  * @NFT_MSG_GETGEN: get the rule-set generation (enum nft_gen_attributes)
  * @NFT_MSG_TRACE: trace event (enum nft_trace_attributes)
+ * @NFT_MSG_NEWNEXPR: create a new named expression (enum nft_nexpr_attributes)
+ * @NFT_MSG_GETNEXPR: get a named expression (enum nft_nexpr_attributes)
+ * @NFT_MSG_DELNEXPR: delete a named expression (enum nft_nexpr_attributes)
+ * @NFT_MSG_GETNEXPR_RESET: get and reset a named expression (enum nft_nexpr_attributes)
  */
 enum nf_tables_msg_types {
 	NFT_MSG_NEWTABLE,
@@ -105,6 +110,10 @@ enum nf_tables_msg_types {
 	NFT_MSG_NEWGEN,
 	NFT_MSG_GETGEN,
 	NFT_MSG_TRACE,
+	NFT_MSG_NEWNEXPR,
+	NFT_MSG_GETNEXPR,
+	NFT_MSG_DELNEXPR,
+	NFT_MSG_GETNEXPR_RESET,
 	NFT_MSG_MAX,
 };
 
@@ -419,6 +428,24 @@ enum nft_verdict_attributes {
 	__NFTA_VERDICT_MAX
 };
 #define NFTA_VERDICT_MAX	(__NFTA_VERDICT_MAX - 1)
+
+/**
+ * enum nft_nexpr_attributes - nf_tables named expression netlink attributes
+ *
+ * @NFTA_NEXPR_TABLE: name of the table containing the expression (NLA_STRING)
+ * @NFTA_NEXPR_NAME: name of this expression type (NLA_STRING)
+ * @NFTA_NEXPR_EXPR: expression data (NLA_NESTED: nft_expr_attributes)
+ * @NFTA_NEXPR_USE: number of references to this expression (NLA_U32)
+ */
+enum nft_nexpr_attributes {
+	NFTA_NEXPR_UNSPEC,
+	NFTA_NEXPR_TABLE,
+	NFTA_NEXPR_NAME,
+	NFTA_NEXPR_EXPR,
+	NFTA_NEXPR_USE,
+	__NFTA_NEXPR_MAX
+};
+#define NFTA_NEXPR_MAX		(__NFTA_NEXPR_MAX - 1)
 
 /**
  * enum nft_expr_attributes - nf_tables expression netlink attributes
@@ -848,12 +875,14 @@ enum nft_limit_attributes {
  *
  * @NFTA_COUNTER_BYTES: number of bytes (NLA_U64)
  * @NFTA_COUNTER_PACKETS: number of packets (NLA_U64)
+ * @NFTA_COUNTER_NAME: counter name (NLA_STRING)
  */
 enum nft_counter_attributes {
 	NFTA_COUNTER_UNSPEC,
 	NFTA_COUNTER_BYTES,
 	NFTA_COUNTER_PACKETS,
 	NFTA_COUNTER_PAD,
+	NFTA_COUNTER_NAME,
 	__NFTA_COUNTER_MAX
 };
 #define NFTA_COUNTER_MAX	(__NFTA_COUNTER_MAX - 1)
@@ -902,6 +931,7 @@ enum nft_queue_attributes {
 
 enum nft_quota_flags {
 	NFT_QUOTA_F_INV		= (1 << 0),
+	NFT_QUOTA_F_DEPLETED	= (1 << 1),
 };
 
 /**
@@ -909,12 +939,14 @@ enum nft_quota_flags {
  *
  * @NFTA_QUOTA_BYTES: quota in bytes (NLA_U16)
  * @NFTA_QUOTA_FLAGS: flags (NLA_U32)
+ * @NFTA_QUOTA_NAME: quota name (NLA_STRING)
  */
 enum nft_quota_attributes {
 	NFTA_QUOTA_UNSPEC,
 	NFTA_QUOTA_BYTES,
 	NFTA_QUOTA_FLAGS,
 	NFTA_QUOTA_PAD,
+	NFTA_QUOTA_NAME,
 	__NFTA_QUOTA_MAX
 };
 #define NFTA_QUOTA_MAX		(__NFTA_QUOTA_MAX - 1)
