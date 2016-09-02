@@ -36,6 +36,9 @@ static void cmp_nftnl_expr(struct nftnl_expr *rule_a,
 	if (nftnl_expr_get_u64(rule_a, NFTNL_EXPR_CTR_PACKETS) !=
 	    nftnl_expr_get_u64(rule_b, NFTNL_EXPR_CTR_PACKETS))
 		print_err("Expr NFTNL_EXPR_CTR_PACKETS mismatches");
+	if (strcmp(nftnl_expr_get_str(rule_a, NFTNL_EXPR_CTR_NAME),
+		   nftnl_expr_get_str(rule_b, NFTNL_EXPR_CTR_NAME)))
+		print_err("Expr NFTNL_EXPR_CTR_NAME mismatches");
 }
 
 int main(int argc, char *argv[])
@@ -58,6 +61,7 @@ int main(int argc, char *argv[])
 
 	nftnl_expr_set_u64(ex, NFTNL_EXPR_CTR_BYTES, 0x123456789abcdef0);
 	nftnl_expr_set_u64(ex, NFTNL_EXPR_CTR_PACKETS, 0xf0123456789abcde);
+	nftnl_expr_set_str(ex, NFTNL_EXPR_CTR_NAME, "test");
 	nftnl_rule_add_expr(a, ex);
 
 	nlh = nftnl_rule_nlmsg_build_hdr(buf, NFT_MSG_NEWRULE, AF_INET, 0, 1234);

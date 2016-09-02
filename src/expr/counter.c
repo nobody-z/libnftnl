@@ -25,6 +25,7 @@
 struct nftnl_expr_counter {
 	uint64_t	pkts;
 	uint64_t	bytes;
+	const char	*name;
 };
 
 static int
@@ -39,6 +40,11 @@ nftnl_expr_counter_set(struct nftnl_expr *e, uint16_t type,
 		break;
 	case NFTNL_EXPR_CTR_PACKETS:
 		ctr->pkts = *((uint64_t *)data);
+		break;
+	case NFTNL_EXPR_CTR_NAME:
+		ctr->name = strdup(data);
+		if (!ctr->name)
+			return -1;
 		break;
 	default:
 		return -1;
@@ -59,6 +65,9 @@ nftnl_expr_counter_get(const struct nftnl_expr *e, uint16_t type,
 	case NFTNL_EXPR_CTR_PACKETS:
 		*data_len = sizeof(ctr->pkts);
 		return &ctr->pkts;
+	case NFTNL_EXPR_CTR_NAME:
+		*data_len = strlen(ctr->name) + 1;
+		return ctr->name;
 	}
 	return NULL;
 }
@@ -77,6 +86,10 @@ static int nftnl_expr_counter_cb(const struct nlattr *attr, void *data)
 		if (mnl_attr_validate(attr, MNL_TYPE_U64) < 0)
 			abi_breakage();
 		break;
+	case NFTA_COUNTER_NAME:
+		if (mnl_attr_validate(attr, MNL_TYPE_STRING) < 0)
+			abi_breakage();
+		break;
 	}
 
 	tb[type] = attr;
@@ -92,6 +105,8 @@ nftnl_expr_counter_build(struct nlmsghdr *nlh, const struct nftnl_expr *e)
 		mnl_attr_put_u64(nlh, NFTA_COUNTER_BYTES, htobe64(ctr->bytes));
 	if (e->flags & (1 << NFTNL_EXPR_CTR_PACKETS))
 		mnl_attr_put_u64(nlh, NFTA_COUNTER_PACKETS, htobe64(ctr->pkts));
+	if (e->flags & (1 << NFTNL_EXPR_CTR_NAME))
+		mnl_attr_put_str(nlh, NFTA_COUNTER_NAME, ctr->name);
 }
 
 static int
@@ -110,6 +125,10 @@ nftnl_expr_counter_parse(struct nftnl_expr *e, struct nlattr *attr)
 	if (tb[NFTA_COUNTER_PACKETS]) {
 		ctr->pkts = be64toh(mnl_attr_get_u64(tb[NFTA_COUNTER_PACKETS]));
 		e->flags |= (1 << NFTNL_EXPR_CTR_PACKETS);
+	}
+	if (tb[NFTA_COUNTER_NAME]) {
+		ctr->name = strdup(mnl_attr_get_str(tb[NFTA_COUNTER_NAME]));
+		e->flags |= (1 << NFTNL_EXPR_CTR_NAME);
 	}
 
 	return 0;
@@ -169,6 +188,8 @@ static int nftnl_expr_counter_export(char *buf, size_t size,
 		nftnl_buf_u64(&b, type, ctr->pkts, PKTS);
 	if (e->flags & (1 << NFTNL_EXPR_CTR_BYTES))
 		nftnl_buf_u64(&b, type, ctr->bytes, BYTES);
+	if (e->flags & (1 << NFTNL_EXPR_CTR_NAME))
+		nftnl_buf_str(&b, type, ctr->name, NAME);
 
 	return nftnl_buf_done(&b);
 }
@@ -177,6 +198,9 @@ static int nftnl_expr_counter_snprintf_default(char *buf, size_t len,
 					       const struct nftnl_expr *e)
 {
 	struct nftnl_expr_counter *ctr = nftnl_expr_data(e);
+
+	if (ctr->name)
+		return snprintf(buf, len, "name %s ", ctr->name);
 
 	return snprintf(buf, len, "pkts %"PRIu64" bytes %"PRIu64" ",
 			ctr->pkts, ctr->bytes);
@@ -209,6 +233,8 @@ static bool nftnl_expr_counter_cmp(const struct nftnl_expr *e1,
 		eq &= (c1->pkts == c2->pkts);
 	if (e1->flags & (1 << NFTNL_EXPR_CTR_BYTES))
 		eq &= (c1->pkts == c2->pkts);
+	if (e1->flags & (1 << NFTNL_EXPR_CTR_NAME))
+		eq &= !strcmp(c1->name, c2->name);
 
 	return eq;
 }
